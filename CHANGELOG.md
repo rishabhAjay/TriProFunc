@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/rishabhAjay/TriProFunc/compare/v1.0.0...v1.0.1) (2025-04-27)
+
+
+### Bug Fixes
+
+* update readme and trigger version bump ([b32870c](https://github.com/rishabhAjay/TriProFunc/commit/b32870c3fda4974837fcd178beb1b62205efe62b))
+
 # 1.0.0 (2025-04-27)
 
 
