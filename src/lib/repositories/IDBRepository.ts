@@ -73,6 +73,7 @@ export interface IDBRepository {
    * @function generateDropTriggerStatement
    * @param {string} triggerName: Name of the trigger to generate drop statement for
    * @param {string} [tableName] - Name of the table to get DDL of(optional)
+   * @param {string} [includeDrop] - Whether to include the drop or not
    * @description Returns the DDL of the given table
    * @returns {string}
    * An sql query of the drop trigger statement
@@ -81,7 +82,8 @@ export interface IDBRepository {
   generateDropStatement(
     triggerName: string,
     type: 'trigger' | 'function' | 'procedure',
-    tableName?: string
+    tableName?: string,
+    includeDrop?: boolean
   ): string;
 
   /**
@@ -275,4 +277,15 @@ export interface IDBRepository {
    *
    */
   escapeIdentifier(name: string): string;
+
+  /**
+   * @function preloadUtilities
+   * @description Loads all utility functions and procedures
+   * @returns { Promise<[MysqlQueryResult, FieldPacket[]] | PostgresQueryResult | IResult<any>> | void}
+   * Finishes Loading the utilities
+   *
+   */
+  preloadUtilities(): Promise<
+    [MysqlQueryResult, FieldPacket[]][] | PostgresQueryResult | IResult<any>
+  > | void;
 }

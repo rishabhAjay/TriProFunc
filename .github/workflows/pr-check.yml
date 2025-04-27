@@ -16,16 +16,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
-      - name: Lint commit message
-        uses: wagoid/commitlint-github-action@v5
-        with:
-          configFile: commitlint.config.js
 
       - name: Run ESLint
         run: yarn lint

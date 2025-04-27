@@ -64,6 +64,8 @@ function cli() {
       InternalConfigManager.getInstance().setClientDB(client);
       const connection = await client.connect();
       const clientRepository = DBRepositoryFactory.createRepository(engine, connection);
+      //preload all utilities for the package(custom procedures and functions)
+      await clientRepository.preloadUtilities();
       InternalConfigManager.getInstance().setClientDBRepository(clientRepository);
       const clientDAL = DALFactory.createRepository(engine);
       InternalConfigManager.getInstance().setClientDAL(clientDAL);

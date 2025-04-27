@@ -1,5 +1,3 @@
-//let cleanedSql = createFunctionSql.replace(/^CREATE DEFINER=`[^`]+`@`[^`]+` /, 'CREATE ');
-
 import { Connection, ConnectionOptions } from 'mysql2/promise';
 import { IDBRepository } from './IDBRepository';
 import { getConfigManager } from '../../config/config.context';
@@ -14,19 +12,19 @@ export class MysqlRepository implements IDBRepository {
   }
 
   async getProcedureCodeFromName(procedureName: string) {
-    return this.mysqlClient.query(`show create procedure ??;`, [procedureName]);
+    return this.mysqlClient.query(`CALL triprofunc_show_create_procedure(?);`, [procedureName]);
   }
 
   async getTriggerCodeFromName(triggerName: string) {
-    return this.mysqlClient.query(`show create trigger ??;`, [triggerName]);
+    return this.mysqlClient.query(`CALL triprofunc_show_create_trigger(?);`, [triggerName]);
   }
 
   async getFunctionCodeFromName(functionName: string) {
-    return this.mysqlClient.query(`show create function ??;`, [functionName]);
+    return this.mysqlClient.query(`CALL triprofunc_show_create_function(?);`, [functionName]);
   }
 
   async getTableDDL(tableName: string) {
-    return this.mysqlClient.query(`show create table ??;`, [tableName]);
+    return this.mysqlClient.query(`CALL triprofunc_show_create_table(?);`, [tableName]);
   }
 
   generateDropStatement(objectName: string, type: 'trigger' | 'function' | 'procedure') {
@@ -209,5 +207,89 @@ export class MysqlRepository implements IDBRepository {
     }
 
     return name;
+  }
+
+  preloadUtilities() {
+    //procedures, functions and triggers aren't returned directly so need these utilities
+    return Promise.all([
+      this.mysqlClient.query(`DROP PROCEDURE IF EXISTS triprofunc_show_create_table;
+        CREATE PROCEDURE triprofunc_show_create_table(table_name_input VARCHAR(255))
+            BEGIN
+              DECLARE table_exists INT;
+
+              SELECT COUNT(*) INTO table_exists
+              FROM information_schema.TABLES
+              WHERE TABLE_NAME = table_name_input;
+
+              IF table_exists > 0 THEN
+                SET @sql = CONCAT('SHOW CREATE Table \`', table_name_input, '\`');
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+              ELSE
+                SELECT '' as \`Create Table\`;
+              END IF;
+            END`),
+      this.mysqlClient.query(`DROP PROCEDURE IF EXISTS triprofunc_show_create_procedure;
+        CREATE PROCEDURE triprofunc_show_create_procedure(proc_name VARCHAR(255))
+            BEGIN
+                DECLARE result TEXT;
+                DECLARE procedure_exists INT;
+
+                -- Check if the procedure exists
+                SELECT COUNT(*) INTO procedure_exists
+                FROM information_schema.ROUTINES
+                WHERE ROUTINE_TYPE = 'PROCEDURE'
+                  AND ROUTINE_NAME = proc_name;
+
+                IF procedure_exists > 0 THEN
+                    SET @sql = CONCAT('SHOW CREATE PROCEDURE \`', proc_name, '\`');
+                    PREPARE stmt FROM @sql;
+                    EXECUTE stmt;
+                    DEALLOCATE PREPARE stmt;
+                ELSE
+                  Select '' as \`Create Procedure\`;
+                END IF;
+            END;`),
+
+      this.mysqlClient.query(`DROP PROCEDURE IF EXISTS triprofunc_show_create_function;
+        CREATE PROCEDURE triprofunc_show_create_function(func_name VARCHAR(255))
+            BEGIN
+              DECLARE function_exists INT;
+
+              SELECT COUNT(*) INTO function_exists
+              FROM information_schema.ROUTINES
+              WHERE ROUTINE_TYPE = 'FUNCTION'
+                AND ROUTINE_NAME = func_name;
+
+              IF function_exists > 0 THEN
+                SET @sql = CONCAT('SHOW CREATE FUNCTION \`', func_name, '\`');
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+              ELSE
+                SELECT '' as \`Create Function\`;
+              END IF;
+            END;`),
+
+      this.mysqlClient.query(`DROP PROCEDURE IF EXISTS triprofunc_show_create_trigger;
+        CREATE PROCEDURE triprofunc_show_create_trigger(trigger_name_input VARCHAR(255))
+            BEGIN
+              DECLARE trigger_exists INT;
+
+              SELECT COUNT(*) INTO trigger_exists
+              FROM information_schema.TRIGGERS
+              where TRIGGER_NAME = trigger_name_input;
+              
+              IF trigger_exists > 0 THEN
+                SET @sql = CONCAT('SHOW CREATE TRIGGER \`', trigger_name_input, '\`');
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+              ELSE
+                SELECT '' as \`Create Trigger\`;
+              END IF;
+            END;`),
+    ]);
   }
 }

@@ -45,7 +45,7 @@ export class MysqlDAL implements IDAL {
     }
     return {
       [statementType]: this.cleanQueryDefiner(
-        this.returnSingleResult(resultObject)[objectProperty]
+        this.returnSingleResult(resultObject[0])[objectProperty] || ''
       ) as string,
     } as IStatementObject;
   }
