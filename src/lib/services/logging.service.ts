@@ -4,7 +4,7 @@ import { highlight } from 'sql-highlight';
 export class LoggingService {
   constructor() {}
   error(message: string, error?: any) {
-    console.error(chalk.red.bold.underline(`${message}: `, error));
+    console.error(chalk.red.bold.underline(`${message}`), error);
   }
 
   warn(message: string) {

@@ -1,5 +1,3 @@
-//let cleanedSql = createFunctionSql.replace(/^CREATE DEFINER=`[^`]+`@`[^`]+` /, 'CREATE ');
-
 import { IDBRepository } from './IDBRepository';
 import { ConnectionPool, Request, Transaction } from 'mssql';
 
@@ -176,11 +174,11 @@ create table ${migrationsTableName} (
 
   async runInputQueries(sql: string, request?: Request) {
     const batches = sql.split('GO;');
-    await Promise.all(
-      batches.map((batch) => {
-        return (request ? request : this.mssqlClient.request()).query(batch);
-      })
-    );
+    /*Run these sequentially because tedious does not let you run
+    queries in parallel on the same connection*/
+    for (const batch of batches) {
+      await (request ? request : this.mssqlClient.request()).query(batch);
+    }
     return;
   }
 
@@ -223,10 +221,8 @@ create table ${migrationsTableName} (
 
     return `[${name.replace(/]/g, ']]')}]`;
   }
+
+  preloadUtilities() {
+    return;
+  }
 }
-
-// case 'mysql':
-//   return `\`${name.replace(/`/g, '``')}\``; // backticks for MySQL
-
-// case 'mssql':
-//   return `[${name.replace(/]/g, ']]')}]`; // square brackets for MSSQL

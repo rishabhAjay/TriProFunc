@@ -23,7 +23,7 @@ export class MssqlDAL implements IDAL {
   mapQueryStatementObjects(resultObject: any, statementType: IStatementKeys): IStatementObject {
     return {
       [statementType]: this.cleanQueryDefiner(
-        this.returnSingleResult(resultObject)[statementType]
+        this.returnSingleResult(resultObject)?.[statementType] || ''
       ) as string,
     } as IStatementObject;
   }
