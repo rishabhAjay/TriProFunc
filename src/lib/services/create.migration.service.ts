@@ -72,7 +72,8 @@ export class CreateMigrationService {
 
       //create a repository that links to the container database after starting the container
       const containerRepository = DBRepositoryFactory.createRepository(engine, containerClient);
-
+      //load the utilities to the container as well
+      await containerRepository.preloadUtilities();
       //grab the current timestamp for migration file creation
       const timestamp = Date.now();
       this.logger.info(`Creating migration ${migrationName} at ${timestamp.toString()}`);
@@ -97,8 +98,8 @@ export class CreateMigrationService {
         })
         .process(async (file) => {
           //define two variables to contain the existing SQL found in the DB vs the new changes in the files
-          let existingSql;
-          let newSql;
+          let existingSql = '';
+          let newSql = '';
 
           //check if the directory is for procedures
           if (file.directory === proceduresDirectory) {
@@ -119,10 +120,21 @@ export class CreateMigrationService {
 
             /*extract the procedure source query from the returned result of the source DB
             and set it to the existingSql variable*/
+            const mappedProcedureObject = this.injectDAL.mapQueryStatementObjects(
+              procedureFromClient,
+              'prosrc'
+            ).prosrc;
             existingSql =
-              this.injectRepository.generateDropStatement(procedureName, 'procedure') +
+              this.injectRepository.generateDropStatement(
+                procedureName,
+                'procedure',
+                '',
+                /*Postgres does not need drop statements but is required on first time
+                creation of a database object*/
+                mappedProcedureObject ? false : true
+              ) +
               '\n' +
-              this.injectDAL.mapQueryStatementObjects(procedureFromClient, 'prosrc').prosrc;
+              mappedProcedureObject;
 
             /*extract the procedure source query from the returned result of the container DB
             and set it to the newSql variable*/
@@ -149,11 +161,19 @@ export class CreateMigrationService {
               this.injectRepository.getFunctionCodeFromName(functionName),
               containerRepository.getFunctionCodeFromName(functionName),
             ]);
-
+            const mappedFunctionObject = this.injectDAL.mapQueryStatementObjects(
+              functionFromClient,
+              'funsrc'
+            ).funsrc;
             /*extract the function source query from the returned result of the source DB
             and set it to the existingSql variable*/
             existingSql =
-              this.injectRepository.generateDropStatement(functionName, 'function') +
+              this.injectRepository.generateDropStatement(
+                functionName,
+                'function',
+                '',
+                mappedFunctionObject ? false : true
+              ) +
               '\n' +
               this.injectDAL.mapQueryStatementObjects(functionFromClient, 'funsrc').funsrc;
 
@@ -188,8 +208,6 @@ export class CreateMigrationService {
             const [triggerFromClient] = await Promise.all([
               this.injectRepository.getTriggerCodeFromName(triggerName, triggerSourceTable),
             ]);
-
-            console.log('TRIGER', triggerFromClient, triggerName, triggerSourceTable);
 
             // set it to existingSql
             existingSql = this.injectDAL.mapQueryStatementObjects(
@@ -265,8 +283,6 @@ export class CreateMigrationService {
 
           //check if the sql queries exist in the variables and compare hashes of the strings
           if (
-            existingSql &&
-            newSql &&
             !compareHashesFromStrings(
               existingSql.trim().replace(/\r/g, ''),
               newSql.trim().replace(/\r/g, '')

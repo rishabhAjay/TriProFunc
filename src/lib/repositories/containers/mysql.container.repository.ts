@@ -24,6 +24,7 @@ export class MysqlContainerRepository {
       database: container.getDatabase(),
       user: container.getUsername(),
       password: container.getUserPassword(),
+      multipleStatements: true,
     });
   }
 

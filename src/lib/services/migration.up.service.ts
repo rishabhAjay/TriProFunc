@@ -39,7 +39,6 @@ export class MigrationUpService {
       migrationsTable = this.injectRepository.escapeIdentifier(migrationsTable!);
       //read all the migration file names from the migration directory
 
-      console.log('DIR:', process.cwd() + `/${migrationsDirectory}`);
       const files = await readdir((process.cwd() + `/${migrationsDirectory}`) as string); // Read files in the current directory;
 
       this.logger.info(`Creating ${migrationsTable} table if it does not exist`);
@@ -97,7 +96,7 @@ export class MigrationUpService {
     } catch (error) {
       //rollback the transaction on error
       this.logger.error(`Error while running migration`, error);
-      console.log(error);
+
       await this.injectRepository.rollbackTransaction(this.transaction);
     } finally {
       await this.injectRepository.closeConnection();

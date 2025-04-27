@@ -178,5 +178,5 @@ export const extractContentBetweenLines = (
  *
  */
 export const appendSemicolonToString = (sqlString: string): string => {
-  return sqlString.trim().slice(-1) === ';' ? '' : ';';
+  return sqlString && sqlString !== '' ? (sqlString.trim().slice(-1) === ';' ? '' : ';') : '';
 };

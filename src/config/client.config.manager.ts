@@ -9,6 +9,7 @@ export class ClientConfigManager<T extends DbEngineMapping['engine']> {
       triggersDirectory: config.triggersDirectory || 'triggers',
       functionsDirectory: config.functionsDirectory || 'functions',
       migrationsTable: config.migrationsTable || 'other_migrations',
+      ...(config.engine === 'mysql' ? { multipleStatements: true } : {}),
       ...config,
     };
   }
