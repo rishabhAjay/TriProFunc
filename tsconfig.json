@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "declaration": true,
+    "declarationDir": "dist/types", // Specify where to put your .d.ts files
+    "declarationMap": true, // optional: helps with editor navigation
+    "emitDeclarationOnly": false,
+    "outDir": "dist",
+    "strict": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "nodenext"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "eslint.config.mjs", "commitlint.config.js", "dist"]
+}

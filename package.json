@@ -1,0 +1,92 @@
+{
+  "name": "triprofunc",
+  "version": "1.0.1",
+  "main": "./dist/index.js",
+  "author": {
+    "name": "Rishabh Ajay",
+    "email": "triprofunc@proton.me",
+    "url": "https://github.com/rishabhAjay/TriProFunc"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rishabhAjay/TriProFunc"
+  },
+  "bugs": {
+    "url": "https://github.com"
+  },
+  "homepage": "https://triprofunc.netlify.app/",
+  "keywords": [
+    "migrations",
+    "sql",
+    "mssql",
+    "mysql",
+    "postgres",
+    "typescript",
+    "cli",
+    "trigger",
+    "procedure",
+    "function"
+  ],
+  "description": "An NPM library to manage and migrate your Triggers, Procedures and Functions",
+  "engines": {
+    "node": ">=18"
+  },
+  "types": "./dist/types/index.d.ts",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@eslint/migrate-config": "^1.4.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@types/dotenv": "^8.2.3",
+    "@types/module-alias": "^2.0.4",
+    "@types/node": "^22.12.0",
+    "@types/yargs": "^17.0.33",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "semantic-release": "^24.2.3",
+    "typescript": "^5.7.3"
+  },
+  "scripts": {
+    "prepare": "npm run build",
+    "clean": "rm -rf dist",
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/**/* --ext .ts",
+    "lint:fix": "eslint src/**/* --ext .ts --fix",
+    "format": "prettier \"src/**/*.ts\" --check",
+    "format:fix": "prettier \"src/**/*.{ts}\" --write"
+  },
+  "files": [
+    "dist/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "triprofunc": "./dist/bin/index.js"
+  },
+  "dependencies": {
+    "@supercharge/promise-pool": "^3.2.0",
+    "@testcontainers/mssqlserver": "^10.18.0",
+    "@testcontainers/mysql": "^10.18.0",
+    "@testcontainers/postgresql": "^10.17.2",
+    "@types/mssql": "^9.1.7",
+    "@types/pg": "^8.11.11",
+    "chalk": "^4",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.7",
+    "memfs": "^4.17.0",
+    "mssql": "^11.0.1",
+    "mysql2": "^3.12.0",
+    "pg": "^8.13.1",
+    "sql-highlight": "^6.0.0",
+    "ts-node": "^10.9.2"
+  }
+}
