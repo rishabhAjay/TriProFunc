@@ -1,5 +1,3 @@
-# TriProFunc
-
 [![3V1DCW7.md.jpg](https://iili.io/3V1DCW7.md.jpg)](https://freeimage.host/i/3V1DCW7)
 
 ![npm](https://img.shields.io/npm/v/triprofunc)
@@ -7,9 +5,11 @@
 ![downloads](https://img.shields.io/npm/dt/triprofunc)
 ![Build](https://img.shields.io/github/actions/workflow/status/rishabhAjay/TriProFunc/publish.yml?branch=main)
 
+# TriProFunc
+
 - **TriProFunc** is a library to help manage the other parts of your Database like Triggers, Procedures and Functions. It currently supports the aforementioned Database objects but more could be added in future(Views for example). It also currently supports Postgres, MySQL and MSSQL.
 
-<h2>Note:</h2> This package requires Docker to run
+<b>Note: This package requires Docker to run</b>
 
 ## Features
 
